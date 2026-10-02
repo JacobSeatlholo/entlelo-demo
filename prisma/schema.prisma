@@ -1,0 +1,27 @@
+// Entlelo Group — Prisma schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model QuoteRequest {
+  id            String   @id @default(cuid())
+  name          String
+  phone         String
+  email         String?
+  clientType    String   @default("Homeowner")
+  service       String
+  suburb        String
+  message       String?
+  status        String   @default("new")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([createdAt])
+  @@index([status])
+}
