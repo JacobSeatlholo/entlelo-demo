@@ -1,3 +1,5 @@
+import { LanguageProvider } from "@/lib/i18n/language-context";
+import { en } from "@/lib/i18n/en";
 import { SiteHeader } from "@/components/entlelo/site-header";
 import { Hero } from "@/components/entlelo/hero";
 import { LogoMarquee } from "@/components/entlelo/logo-marquee";
@@ -17,8 +19,7 @@ const jsonLd = {
   "@type": "GeneralContractor",
   name: company.legalName,
   alternateName: company.name,
-  description:
-    "CIDB 6-rated, 100% black-owned contractor in Gauteng specialising in clear view fencing, scaffolding supply and fit, steel fabrication with in-house welding, and civil construction for homeowners and developers across Johannesburg.",
+  description: en.hero.subtitle,
   url: "https://entlelo.co.za",
   telephone: `+27${company.phonePrimary.replace(/\s/g, "").slice(1)}`,
   email: company.email,
@@ -40,31 +41,37 @@ const jsonLd = {
   sameAs: [company.facebook],
   makesOffer: services.map((s) => ({
     "@type": "Offer",
-    itemOffered: { "@type": "Service", name: s.title, description: s.short },
+    itemOffered: {
+      "@type": "Service",
+      name: s.apiTitle,
+      description: en.services.items[s.id].description,
+    },
   })),
 };
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col bg-white">
-      <SiteHeader />
-      <main className="flex-1">
-        <Hero />
-        <LogoMarquee />
-        <Services />
-        <WhyUs />
-        <Projects />
-        <Process />
-        <Testimonials />
-        <Faq />
-        <QuoteSection />
-      </main>
-      <SiteFooter />
-      <FloatingActions />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-    </div>
+    <LanguageProvider>
+      <div className="flex min-h-screen flex-col bg-white">
+        <SiteHeader />
+        <main className="flex-1">
+          <Hero />
+          <LogoMarquee />
+          <Services />
+          <WhyUs />
+          <Projects />
+          <Process />
+          <Testimonials />
+          <Faq />
+          <QuoteSection />
+        </main>
+        <SiteFooter />
+        <FloatingActions />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </div>
+    </LanguageProvider>
   );
 }

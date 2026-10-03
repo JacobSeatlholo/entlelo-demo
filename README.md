@@ -26,6 +26,10 @@ Content and photography sourced from [entlelo.co.za](https://entlelo.co.za) (the
 
 ## Features
 
+- **Multilingual — all 11 official South African languages**: English, Afrikaans, isiZulu,
+  isiXhosa, Sesotho, Setswana, Sepedi, siSwati, Tshivenḓa, Xitsonga and isiNdebele.
+  One-click switcher in the header (and footer language chips); the choice is remembered in
+  `localStorage` and auto-detected from the browser on first visit. `<html lang>` follows.
 - Sticky, scroll-aware header with mobile sheet navigation
 - Animated hero with trust badges and live counters (11+ yrs, 240+ clients, 2000+ cases)
 - Filterable project portfolio (Klipfontein View, Munyaka, Sasol, Kempton Park, Balwin, EastGate Mall)
@@ -72,17 +76,14 @@ cat ~/.ssh/entlelo_github.pub
 
 ### One-time setup on GitHub
 
-1. Create a new **empty** repository on GitHub (e.g. `entlelo-demo`).
+1. Create a new **empty** repository on GitHub — this project targets `JacobSeatlholo/entlelo-demo`.
 2. In the repo: **Settings → Deploy keys → Add deploy key**
 3. Title: `entlelo-demo-<machine>`, paste the contents of `~/.ssh/entlelo_github.pub`.
    Tick **Allow write access** if you want to push from this machine.
-4. Copy the repo SSH URL (`git@github.com:<user>/<repo>.git`) and set it as the remote:
+4. The remote is already configured — push:
 
 ```bash
-git remote set-url origin git@github.com:<user>/<repo>.git   # if origin exists
-# or
-git remote add origin git@github.com:<user>/<repo>.git
-
+git remote set-url origin git@github.com:JacobSeatlholo/entlelo-demo.git   # if it needs changing
 git push -u origin main
 ```
 
@@ -100,13 +101,29 @@ src/
     layout.tsx            # SEO metadata, fonts
     api/quote/route.ts    # POST /api/quote (Zod → Prisma)
   components/
-    entlelo/              # site sections & shared UI
+    entlelo/              # site sections & shared UI (+ language-switcher)
     ui/                   # shadcn/ui primitives
   lib/
-    site-data.ts          # all copy/content in one place
+    i18n/
+      config.ts           # 11 official SA languages, detection, storage
+      en.ts               # English source dictionary (canonical copy)
+      translations.ts     # generated dictionaries (af zu xh st tn nso ss ve ts nr)
+      language-context.tsx # provider + useI18n() hook
+    site-data.ts          # language-neutral data (contacts, ids, media)
     db.ts                 # Prisma client
+scripts/
+  gen-translations.ts     # LLM translation pipeline (resumable, cached)
 prisma/schema.prisma      # QuoteRequest model
 public/images/            # photography from the original site
+```
+
+### Regenerating translations
+
+The non-English dictionaries are machine-generated and validated against the English
+structure (any gap falls back to English automatically). To re-run after editing `en.ts`:
+
+```bash
+bun scripts/gen-translations.ts   # cached slices in .translation-cache/ are skipped
 ```
 
 ## License & credits

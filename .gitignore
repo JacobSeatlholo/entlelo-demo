@@ -70,3 +70,6 @@ server.log
 /agent-ctx
 worklog.md
 .zscripts/dev.pid
+
+# translation generation cache
+.translation-cache/

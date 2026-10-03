@@ -1,12 +1,16 @@
+"use client";
+
 import { clientLogos } from "@/lib/client-logos";
+import { useI18n } from "@/lib/i18n/language-context";
 
 export function LogoMarquee() {
+  const { t } = useI18n();
   const doubled = [...clientLogos, ...clientLogos];
   return (
-    <section className="border-b border-black/5 bg-white py-10" aria-label="Clients who trust Entlelo">
+    <section className="border-b border-black/5 bg-white py-10" aria-label={t.marquee.trusted}>
       <div className="section-shell">
         <p className="text-center text-xs font-bold uppercase tracking-[0.3em] text-gold-deep">
-          Trusted by teams across construction &amp; industry
+          {t.marquee.trusted}
         </p>
       </div>
       <div className="marquee-paused relative mt-8 overflow-hidden" role="presentation">

@@ -5,6 +5,8 @@ import Link from "next/link";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { navLinks, company } from "@/lib/site-data";
+import { useI18n } from "@/lib/i18n/language-context";
+import { LanguageSwitcher } from "@/components/entlelo/language-switcher";
 import { PhoneIcon, MailIcon, PinIcon, ArrowRightIcon } from "@/components/entlelo/icons";
 
 function Logo({ compact = false }: { compact?: boolean }) {
@@ -18,7 +20,7 @@ function Logo({ compact = false }: { compact?: boolean }) {
       {!compact && (
         <span className="hidden flex-col leading-tight sm:flex">
           <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold-deep">Entlelo Group</span>
-          <span className="text-sm text-ink">Civil work &amp; fencing</span>
+          <span className="text-sm text-ink">{company.tagline}</span>
         </span>
       )}
     </Link>
@@ -26,6 +28,7 @@ function Logo({ compact = false }: { compact?: boolean }) {
 }
 
 export function SiteHeader() {
+  const { t } = useI18n();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -42,11 +45,11 @@ export function SiteHeader() {
       <div className="bg-charcoal text-white">
         <div className="section-shell flex h-9 items-center justify-center gap-2 text-center text-[11px] font-medium tracking-wide sm:justify-between sm:text-xs">
           <p className="truncate">
-            <span className="text-gold">CIDB 6 rated</span>
+            <span className="text-gold">{t.topbar.cidb}</span>
             <span className="mx-1.5 hidden sm:inline text-white/40">·</span>
-            <span className="hidden sm:inline">100% black-owned</span>
+            <span className="hidden sm:inline">{t.topbar.owned}</span>
             <span className="mx-1.5 text-white/40">·</span>
-            Serving Johannesburg &amp; Gauteng
+            {t.topbar.serving}
           </p>
           <a
             href={`tel:${company.phonePrimary.replace(/\s/g, "")}`}
@@ -75,18 +78,20 @@ export function SiteHeader() {
                 href={l.href}
                 className="rounded-full px-4 py-2 text-sm font-medium text-ink transition hover:bg-white hover:text-gold-deep"
               >
-                {l.label}
+                {t.nav[l.id]}
               </a>
             ))}
           </nav>
 
           <div className="flex items-center gap-2.5">
+            <LanguageSwitcher />
+
             <Button
               asChild
               className="hidden rounded-full bg-charcoal text-white hover:bg-gold hover:text-charcoal md:inline-flex"
             >
               <a href="#quote" className="gap-2">
-                Free Quote
+                {t.nav.quote}
                 <ArrowRightIcon className="h-4 w-4" aria-hidden="true" />
               </a>
             </Button>
@@ -97,7 +102,7 @@ export function SiteHeader() {
                   variant="outline"
                   size="icon"
                   className="h-11 w-11 rounded-full border-black/10 bg-white lg:hidden"
-                  aria-label="Open navigation menu"
+                  aria-label={t.a11y.menuOpen}
                 >
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-5 w-5" aria-hidden="true">
                     <path strokeLinecap="round" d="M4 7h16M4 12h16M4 17h16" />
@@ -105,7 +110,7 @@ export function SiteHeader() {
                 </Button>
               </SheetTrigger>
               <SheetContent side="right" className="flex w-[86vw] max-w-sm flex-col bg-cream p-0">
-                <SheetTitle className="sr-only">Navigation menu</SheetTitle>
+                <SheetTitle className="sr-only">{t.a11y.menuOpen}</SheetTitle>
                 <div className="border-b border-black/5 p-5">
                   <Logo />
                 </div>
@@ -117,7 +122,7 @@ export function SiteHeader() {
                       onClick={() => setOpen(false)}
                       className="rounded-xl px-4 py-3 text-base font-medium text-charcoal transition hover:bg-white"
                     >
-                      {l.label}
+                      {t.nav[l.id]}
                     </a>
                   ))}
                 </nav>
@@ -132,9 +137,10 @@ export function SiteHeader() {
                     <PinIcon className="mt-0.5 h-4 w-4 shrink-0 text-gold-deep" />
                     Chloorkop Industrial, Kempton Park
                   </p>
+                  <LanguageSwitcher className="w-full justify-center" />
                   <Button asChild className="w-full rounded-full bg-charcoal text-white hover:bg-gold hover:text-charcoal">
                     <a href="#quote" onClick={() => setOpen(false)}>
-                      Request a Free Quote
+                      {t.nav.quoteLong}
                     </a>
                   </Button>
                 </div>

@@ -1,12 +1,17 @@
-import Link from "next/link";
+"use client";
+
 import { company, services, navLinks } from "@/lib/site-data";
-import { PhoneIcon, MailIcon, PinIcon, FacebookIcon, ArrowRightIcon } from "@/components/entlelo/icons";
+import { LANGUAGES } from "@/lib/i18n/config";
+import { useI18n } from "@/lib/i18n/language-context";
+import { PhoneIcon, MailIcon, PinIcon, FacebookIcon, ArrowRightIcon, GlobeIcon } from "@/components/entlelo/icons";
+import { cn } from "@/lib/utils";
 
 export function SiteFooter() {
+  const { t, lang, setLang } = useI18n();
   const year = new Date().getFullYear();
 
   return (
-    <footer className="mt-auto border-t border-white/10 bg-charcoal text-white" aria-label="Site footer">
+    <footer className="mt-auto border-t border-white/10 bg-charcoal text-white" aria-label={t.footer.getInTouch}>
       <div className="section-shell grid gap-12 py-14 lg:grid-cols-[1.25fr_0.75fr_0.9fr_1fr]">
         {/* Brand */}
         <div>
@@ -19,31 +24,29 @@ export function SiteFooter() {
             />
           </div>
           <p className="mt-5 max-w-sm text-sm leading-7 text-white/65">
-            We deliver practical construction solutions with a focus on quality workmanship, safety
-            standards and reliable service — for homeowners and developers across Johannesburg, Gauteng
-            and surrounding areas.
+            {t.footer.tagline}
           </p>
           <div className="mt-5 flex flex-wrap gap-2">
             <span className="rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-gold">
               CIDB 6
             </span>
             <span className="rounded-full border border-white/15 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-white/70">
-              100% Black-Owned
+              {t.footer.blackOwned}
             </span>
             <span className="rounded-full border border-white/15 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-white/70">
-              Est. {company.founded}
+              {t.footer.est} {company.founded}
             </span>
           </div>
         </div>
 
         {/* Services */}
-        <nav aria-label="Footer services">
-          <h3 className="text-sm font-bold uppercase tracking-[0.24em] text-gold">Services</h3>
+        <nav aria-label={t.footer.services}>
+          <h3 className="text-sm font-bold uppercase tracking-[0.24em] text-gold">{t.footer.services}</h3>
           <ul className="mt-5 space-y-3 text-sm text-white/70">
             {services.map((s) => (
               <li key={s.id}>
                 <a href="#services" className="transition hover:text-gold">
-                  {s.title}
+                  {t.services.items[s.id].title}
                 </a>
               </li>
             ))}
@@ -51,19 +54,19 @@ export function SiteFooter() {
         </nav>
 
         {/* Company links */}
-        <nav aria-label="Footer company links">
-          <h3 className="text-sm font-bold uppercase tracking-[0.24em] text-gold">Company</h3>
+        <nav aria-label={t.footer.company}>
+          <h3 className="text-sm font-bold uppercase tracking-[0.24em] text-gold">{t.footer.company}</h3>
           <ul className="mt-5 space-y-3 text-sm text-white/70">
             {navLinks.map((l) => (
               <li key={l.href}>
                 <a href={l.href} className="transition hover:text-gold">
-                  {l.label}
+                  {t.nav[l.id]}
                 </a>
               </li>
             ))}
             <li>
               <a href="#quote" className="font-semibold text-gold transition hover:text-gold-soft">
-                Request a Quote
+                {t.footer.requestQuote}
               </a>
             </li>
           </ul>
@@ -71,7 +74,7 @@ export function SiteFooter() {
 
         {/* Contact */}
         <div>
-          <h3 className="text-sm font-bold uppercase tracking-[0.24em] text-gold">Get in touch</h3>
+          <h3 className="text-sm font-bold uppercase tracking-[0.24em] text-gold">{t.footer.getInTouch}</h3>
           <ul className="mt-5 space-y-4 text-sm text-white/70">
             <li>
               <a
@@ -100,18 +103,47 @@ export function SiteFooter() {
                 className="inline-flex items-center gap-2.5 rounded-full border border-white/15 px-4 py-2 text-sm font-medium text-white/80 transition hover:border-gold hover:text-gold"
               >
                 <FacebookIcon className="h-4 w-4" aria-hidden="true" />
-                Follow us on Facebook
+                {t.footer.followFacebook}
               </a>
             </li>
           </ul>
         </div>
       </div>
 
+      {/* Languages — all 11 official South African languages */}
+      <div className="border-t border-white/10">
+        <div className="section-shell py-8">
+          <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.24em] text-gold">
+            <GlobeIcon className="h-4 w-4" aria-hidden="true" />
+            {t.footer.languages}
+          </p>
+          <ul className="mt-4 flex flex-wrap gap-2">
+            {LANGUAGES.map((l) => (
+              <li key={l.code}>
+                <button
+                  type="button"
+                  onClick={() => setLang(l.code)}
+                  aria-pressed={lang === l.code}
+                  className={cn(
+                    "rounded-full border px-3.5 py-1.5 text-xs font-semibold transition",
+                    lang === l.code
+                      ? "border-gold bg-gold text-charcoal shadow-[0_4px_14px_-4px_rgba(215,166,72,0.6)]"
+                      : "border-white/15 text-white/70 hover:border-gold/60 hover:text-gold"
+                  )}
+                >
+                  {l.native}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
       <div className="border-t border-white/10">
         <div className="section-shell flex flex-col items-center justify-between gap-3 py-5 text-center text-xs text-white/50 sm:flex-row sm:text-left">
-          <p>© {year} {company.legalName} — All rights reserved.</p>
+          <p>© {year} {company.legalName} — {t.footer.rights}</p>
           <p className="flex items-center gap-1.5">
-            Built to help Johannesburg homeowners &amp; developers build safer
+            {t.footer.mission}
             <ArrowRightIcon className="h-3 w-3 text-gold" aria-hidden="true" />
           </p>
         </div>

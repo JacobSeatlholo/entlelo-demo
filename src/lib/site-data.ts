@@ -1,5 +1,10 @@
 /**
- * Entlelo Group — central site content.
+ * Entlelo Group — language-neutral site data.
+ *
+ * All human-readable copy lives in src/lib/i18n/en.ts (and its
+ * translations). This file only carries identifiers, media, contact
+ * details and values that are identical across languages.
+ *
  * Sourced from entlelo.co.za (About, Services, Portfolio, Contact pages)
  * and repositioned for Johannesburg homeowners & developers.
  */
@@ -15,285 +20,154 @@ export const company = {
   email: "info@entlelo.co.za",
   address: "ERF 5445, 6 Proton Street, Chloorkop Industrial, Kempton Park, Gauteng",
   facebook: "https://www.facebook.com/share/p/17bpGXpg2x/",
-  hours: "Mon – Fri: 07:00 – 17:00 · Sat: 08:00 – 13:00 · Emergency call-outs 24/7",
   rating: "CIDB 6",
   whatsapp: "27837103475",
 } as const;
 
 export const stats = [
-  { value: 11, prefix: "", suffix: "+", label: "Years in construction" },
-  { value: 240, prefix: "", suffix: "+", label: "Satisfied clients" },
-  { value: 2000, prefix: "", suffix: "+", label: "Successful cases" },
-  { value: 6, prefix: "CIDB ", suffix: "", label: "Rated contractor" },
+  { id: "years", value: 11, prefix: "", suffix: "+" },
+  { id: "clients", value: 240, prefix: "", suffix: "+" },
+  { id: "cases", value: 2000, prefix: "", suffix: "+" },
+  { id: "graded", value: 6, prefix: "CIDB ", suffix: "" },
 ] as const;
 
-export type Service = {
-  id: string;
-  title: string;
-  short: string;
-  description: string;
+export type StatId = (typeof stats)[number]["id"];
+
+export type ServiceId = "clearVu" | "scaffolding" | "steel" | "civil";
+export type ServiceIconName = "fence" | "scaffold" | "weld" | "civil";
+
+export type ServiceMeta = {
+  id: ServiceId;
+  /** Canonical English title — used for the quote API payload and JSON-LD. */
+  apiTitle: string;
+  icon: ServiceIconName;
   image: string;
-  alt: string;
-  features: string[];
-  icon: "fence" | "scaffold" | "weld" | "civil";
-  badge?: string;
+  hasBadge: boolean;
 };
 
-export const services: Service[] = [
+export const services: ServiceMeta[] = [
   {
-    id: "clear-view-fencing",
-    title: "Clear View Fencing",
-    short: "Supply & install",
-    description:
-      "High-visibility welded mesh panels with genuine anti-climb performance — the security fence of choice for estates, schools, logistics yards and homes across Johannesburg. We supply, install and repair Clear Vu fencing rated for residential and industrial perimeters.",
-    image: "/images/projects/clear-vu-fence.jpg",
-    alt: "Clear Vu welded mesh fencing installation by Entlelo Group",
-    features: [
-      "Anti-climb welded mesh panels",
-      "Residential, estate & industrial perimeters",
-      "Repairs, extensions & panel replacement",
-      "Powder-coated galvanised steel",
-    ],
+    id: "clearVu",
+    apiTitle: "Clear View Fencing",
     icon: "fence",
-    badge: "Most requested",
+    image: "/images/projects/clear-vu-fence.jpg",
+    hasBadge: true,
   },
   {
     id: "scaffolding",
-    title: "Scaffolding Supply & Fit",
-    short: "Hire, erection & inspection",
-    description:
-      "Temporary access structures supplied, erected, inspected and dismantled for safe construction, maintenance and repair work — from home renovations to mall upgrades like our EastGate project. SANS-compliant erection with tagged inspection handover.",
-    image: "/images/projects/scaffolding.jpg",
-    alt: "Scaffolding erected on a construction site by Entlelo Group",
-    features: [
-      "Erection, inspection & dismantling",
-      "SANS-compliant tagged handover",
-      "Short & long-term hire",
-      "Building, painting & maintenance access",
-    ],
+    apiTitle: "Scaffolding Supply & Fit",
     icon: "scaffold",
+    image: "/images/projects/scaffolding.jpg",
+    hasBadge: false,
   },
   {
-    id: "steel-fabrication",
-    title: "Steel Fabrication & Gates",
-    short: "In-house welding expertise",
-    description:
-      "Design, fabrication, installation and maintenance of structural steelwork and custom gate systems. Our own welding teams build sliding gates, security gates, balustrades and steel structures to spec — no middlemen, no delays.",
-    image: "/images/projects/steel-gates.jpg",
-    alt: "Custom steel gates and fabrication by Entlelo Group",
-    features: [
-      "Custom sliding & driveway gates",
-      "Structural steelwork & carports",
-      "On-site welding & repairs",
-      "Automation-ready installations",
-    ],
+    id: "steel",
+    apiTitle: "Steel Fabrication & Gates",
     icon: "weld",
-    badge: "In-house welding",
+    image: "/images/projects/steel-gates.jpg",
+    hasBadge: true,
   },
   {
-    id: "civil-construction",
-    title: "Civil Construction — CIDB 6",
-    short: "Graded delivery capacity",
-    description:
-      "Civil construction delivery across infrastructure and built-environment work with the capacity expected from a CIDB 6-rated contractor — warehouses, paving, concrete works and site development for developers and homeowners alike.",
-    image: "/images/projects/civil-warehouse.jpg",
-    alt: "Civil construction warehouse project delivered by Entlelo Group",
-    features: [
-      "CIDB 6 graded capacity",
-      "Warehouses & industrial buildings",
-      "Paving, concrete & siteworks",
-      "Developer & principal-contractor experience",
-    ],
+    id: "civil",
+    apiTitle: "Civil Construction — CIDB 6",
     icon: "civil",
+    image: "/images/projects/civil-warehouse.jpg",
+    hasBadge: false,
   },
 ];
 
-export type Project = {
-  id: string;
+export type ProjectCategory = "Fencing" | "Scaffolding" | "Steel" | "Civil";
+export type ProjectId =
+  | "klipfonteinView"
+  | "munyaka"
+  | "sasol"
+  | "kemptonPark"
+  | "balwin"
+  | "eastgateMall";
+
+export type ProjectMeta = {
+  id: ProjectId;
+  /** Client / estate name — proper noun, not translated. */
   client: string;
-  title: string;
-  category: "Fencing" | "Scaffolding" | "Steel" | "Civil";
-  service: string;
-  image: string;
-  alt: string;
+  /** Location — proper noun, not translated. */
   location: string;
-  summary: string;
-  scope: string[];
+  category: ProjectCategory;
+  image: string;
 };
 
-export const projects: Project[] = [
+export const projectCategories: ProjectCategory[] = [
+  "Fencing",
+  "Scaffolding",
+  "Steel",
+  "Civil",
+];
+
+export const projects: ProjectMeta[] = [
   {
-    id: "klipfontein-view",
+    id: "klipfonteinView",
     client: "Klipfontein View",
-    title: "Clear Vu Fence",
-    category: "Fencing",
-    service: "Steel fabrication and gates",
-    image: "/images/projects/steel-gates.jpg",
-    alt: "Clear Vu fence and steel gates at Klipfontein View",
     location: "Klipfontein View, Gauteng",
-    summary:
-      "Full perimeter Clear Vu fencing with matching steel access gates for a residential development — fabricated and installed by our own welding teams.",
-    scope: ["Perimeter Clear Vu fencing", "Custom steel gates", "Welded posts & brackets"],
+    category: "Fencing",
+    image: "/images/projects/steel-gates.jpg",
   },
   {
     id: "munyaka",
     client: "Munyaka",
-    title: "Scaffolding",
-    category: "Scaffolding",
-    service: "Scaffolding supply and fit",
-    image: "/images/projects/scaffolding.jpg",
-    alt: "Scaffolding supply and fit at Munyaka",
     location: "Munyaka, Gauteng",
-    summary:
-      "Multi-level scaffolding supplied and fitted for safe exterior construction and maintenance access on the Munyaka development.",
-    scope: ["Supply & fit", "Tagged inspection handover", "Progressive dismantling"],
+    category: "Scaffolding",
+    image: "/images/projects/scaffolding.jpg",
   },
   {
     id: "sasol",
     client: "Sasol",
-    title: "Clear Vu Fence",
-    category: "Fencing",
-    service: "Clear view fencing supply and install",
-    image: "/images/projects/clear-vu-fence.jpg",
-    alt: "Clear view fencing supplied and installed for Sasol",
     location: "Sasol site, Gauteng",
-    summary:
-      "High-security anti-climb welded mesh fencing supplied and installed to industrial specification for Sasol.",
-    scope: ["Industrial Clear Vu supply", "Anti-climb mesh install", "Compliance line & level"],
+    category: "Fencing",
+    image: "/images/projects/clear-vu-fence.jpg",
   },
   {
-    id: "kempton-park",
+    id: "kemptonPark",
     client: "Kempton Park",
-    title: "Warehouse",
-    category: "Civil",
-    service: "Civil constructions with CIDB 6",
-    image: "/images/projects/civil-warehouse.jpg",
-    alt: "Warehouse civil construction in Kempton Park",
     location: "Kempton Park, Gauteng",
-    summary:
-      "Warehouse construction delivered with the capacity expected of a CIDB 6 contractor — from siteworks through to handover.",
-    scope: ["Siteworks & foundations", "Structural build", "CIDB 6 graded delivery"],
+    category: "Civil",
+    image: "/images/projects/civil-warehouse.jpg",
   },
   {
     id: "balwin",
     client: "Balwin",
-    title: "Civil Work",
-    category: "Civil",
-    service: "Civil constructions with CIDB 6",
-    image: "/images/projects/civil-balwin.jpg",
-    alt: "Civil works for Balwin property development",
     location: "Balwin development, Gauteng",
-    summary:
-      "Civil works package supporting a large residential property developer — delivered on programme with tight quality control.",
-    scope: ["Bulk earthworks support", "Concrete & paving", "Developer programme compliance"],
+    category: "Civil",
+    image: "/images/projects/civil-balwin.jpg",
   },
   {
-    id: "eastgate-mall",
+    id: "eastgateMall",
     client: "Germiston",
-    title: "EastGate Mall",
-    category: "Scaffolding",
-    service: "Scaffolding supply and fit",
-    image: "/images/projects/eastgate-mall.jpg",
-    alt: "Scaffolding at EastGate Mall, Germiston",
     location: "EastGate Mall, Germiston",
-    summary:
-      "Scaffolding supply and fit for retail maintenance and upgrade works at EastGate Mall — erected around trading hours.",
-    scope: ["Retail-hour compliant erection", "Facade access", "Daily safety inspection"],
+    category: "Scaffolding",
+    image: "/images/projects/eastgate-mall.jpg",
   },
 ];
 
-export const processSteps = [
-  {
-    step: "01",
-    title: "Tell us what you need",
-    description:
-      "Call, WhatsApp or send the quote form. Share your site location, the service you need, and any timing or size details — photos help.",
-  },
-  {
-    step: "02",
-    title: "Site visit & fixed quote",
-    description:
-      "We assess the site in person across Johannesburg, confirm measurements and conditions, then issue a clear, itemised quote — no surprises.",
-  },
-  {
-    step: "03",
-    title: "Fabricate & install",
-    description:
-      "Our in-house teams fabricate, erect and install on the agreed programme, with safety files, supervision and daily site housekeeping.",
-  },
-  {
-    step: "04",
-    title: "Inspect & hand over",
-    description:
-      "We walk the work with you, snag and sign off, and leave you with workmanship you can rely on — plus support long after handover.",
-  },
-] as const;
+export type ProcessStepId = "s1" | "s2" | "s3" | "s4";
 
-export const testimonials = [
-  {
-    quote:
-      "Entlelo fenced our entire home perimeter with Clear Vu and built the gates. The team arrived when they said they would, the welding is neat, and the quote never changed. Our estate neighbours have since used them too.",
-    name: "Thandi M.",
-    role: "Homeowner",
-    area: "Roodepoort, Johannesburg",
-  },
-  {
-    quote:
-      "As a developer we need contractors who hold a programme. Entlelo delivered our fencing and scaffolding packages across phases without holding up other trades. Their CIDB 6 grading and safety file made our principal contractor's job easy.",
-    name: "Johan v.d. Berg",
-    role: "Development Manager",
-    area: "Midrand, Gauteng",
-  },
-  {
-    quote:
-      "Scaffolding was up on time, tagged, and inspected daily. When we needed an extra lift for the painters they sorted it within 24 hours. Professional outfit from quote to dismantle.",
-    name: "Sipho K.",
-    role: "Facilities Manager",
-    area: "Germiston, East Rand",
-  },
-  {
-    quote:
-      "They replaced our shopfront roller gate and welded new security brackets the same week we called. Honest pricing and the finish is excellent. Proud to support a black-owned business that delivers like this.",
-    name: "Aisha R.",
-    role: "Business Owner",
-    area: "Soweto, Johannesburg",
-  },
-] as const;
+export const processSteps: { id: ProcessStepId; num: string }[] = [
+  { id: "s1", num: "01" },
+  { id: "s2", num: "02" },
+  { id: "s3", num: "03" },
+  { id: "s4", num: "04" },
+];
 
-export const faqs = [
-  {
-    q: "Do you work with homeowners, or only big developers?",
-    a: "Both. We install Clear Vu fencing, gates and small civil works for private homes across Johannesburg, and we hold the CIDB 6 grading, safety files and capacity that developers and principal contractors require for larger sites.",
-  },
-  {
-    q: "Which areas do you service?",
-    a: "We are based in Chloorkop, Kempton Park and deliver across the Greater Johannesburg area — Sandton, Midrand, Soweto, Roodepoort, Randburg, the East Rand (Germiston, Boksburg, Benoni) and Centurion/Pretoria by arrangement.",
-  },
-  {
-    q: "What should I include in my quote request?",
-    a: "Share the service you need, the site location, the type of work involved, and any timing or size details that will help us understand the scope. Photos of the site or existing fence/gate help us quote faster.",
-  },
-  {
-    q: "How long does it take to receive a response?",
-    a: "We aim to review quote requests as quickly as possible and respond once we have enough information to prepare the next step — usually the same working day for calls and WhatsApps.",
-  },
-  {
-    q: "Will you contact me before sending a final quote?",
-    a: "Yes. If we need more details, we may contact you first to confirm measurements, project requirements, or site conditions. For fencing and gates we prefer to measure on site so the quote is fixed.",
-  },
-  {
-    q: "Is your scaffolding compliant and inspected?",
-    a: "Yes. Scaffolding is erected to SANS requirements, handed over with a tagged inspection, and inspected regularly for the duration of the hire. Dismantling is done by the same trained teams.",
-  },
-  {
-    q: "What does CIDB 6 actually mean for me?",
-    a: "The Construction Industry Development Board grades contractors by capability. A CIDB 6 rating means Entlelo is formally graded to tender and deliver larger public and private contracts — capacity and compliance you inherit on your own project, big or small.",
-  },
-  {
-    q: "Do you do the welding yourselves?",
-    a: "Yes — steel fabrication and welding is in-house. Gates, brackets, posts and structural steel are fabricated by our own coded welders, which keeps quality tight and lead times short.",
-  },
-] as const;
+export type TestimonialId = "t1" | "t2" | "t3" | "t4";
+
+export const testimonials: { id: TestimonialId; name: string; area: string }[] = [
+  { id: "t1", name: "Thandi M.", area: "Roodepoort, Johannesburg" },
+  { id: "t2", name: "Johan v.d. Berg", area: "Midrand, Gauteng" },
+  { id: "t3", name: "Sipho K.", area: "Germiston, East Rand" },
+  { id: "t4", name: "Aisha R.", area: "Soweto, Johannesburg" },
+];
+
+export const faqIds = ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"] as const;
+
+export type FaqId = (typeof faqIds)[number];
 
 export const serviceAreas = [
   "Johannesburg CBD",
@@ -310,11 +184,13 @@ export const serviceAreas = [
   "Centurion",
 ] as const;
 
-export const navLinks = [
-  { href: "#services", label: "Services" },
-  { href: "#why-us", label: "Why Entlelo" },
-  { href: "#projects", label: "Projects" },
-  { href: "#process", label: "Process" },
-  { href: "#faq", label: "FAQ" },
-  { href: "#contact", label: "Contact" },
-] as const;
+export type NavLinkId = "services" | "whyUs" | "projects" | "process" | "faq" | "contact";
+
+export const navLinks: { id: NavLinkId; href: string }[] = [
+  { id: "services", href: "#services" },
+  { id: "whyUs", href: "#why-us" },
+  { id: "projects", href: "#projects" },
+  { id: "process", href: "#process" },
+  { id: "faq", href: "#faq" },
+  { id: "contact", href: "#quote" },
+];

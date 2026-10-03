@@ -17,31 +17,33 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { company, services, serviceAreas } from "@/lib/site-data";
+import { useI18n } from "@/lib/i18n/language-context";
 import { Reveal } from "@/components/entlelo/reveal";
 import { PhoneIcon, MailIcon, PinIcon, ClockIcon, WhatsAppIcon, CheckCircleIcon, ArrowRightIcon } from "@/components/entlelo/icons";
 
-const formSchema = z.object({
-  name: z.string().trim().min(2, "Please enter your name"),
-  phone: z
-    .string()
-    .trim()
-    .min(9, "Please enter a valid contact number")
-    .max(20)
-    .regex(/^[0-9+()\s-]+$/, "Digits, spaces, +, - and brackets only"),
-  email: z.string().trim().email("Please enter a valid email").or(z.literal("")),
-  clientType: z.enum(["Homeowner", "Developer", "Business", "Contractor"]),
-  service: z.string().trim().min(2, "Please select a service"),
-  suburb: z.string().trim().min(2, "Please tell us where the site is"),
-  message: z.string().trim().max(2000).optional().or(z.literal("")),
-});
-
-type FormValues = z.infer<typeof formSchema>;
-
-const clientTypes = ["Homeowner", "Developer", "Business", "Contractor"] as const;
+const clientTypeValues = ["Homeowner", "Developer", "Business", "Contractor"] as const;
 
 export function QuoteSection() {
+  const { t } = useI18n();
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+
+  const formSchema = z.object({
+    name: z.string().trim().min(2, t.quote.errors.name),
+    phone: z
+      .string()
+      .trim()
+      .min(9, t.quote.errors.phone)
+      .max(20)
+      .regex(/^[0-9+()\s-]+$/, t.quote.errors.phoneChars),
+    email: z.string().trim().email(t.quote.errors.email).or(z.literal("")),
+    clientType: z.enum(clientTypeValues),
+    service: z.string().trim().min(2, t.quote.errors.service),
+    suburb: z.string().trim().min(2, t.quote.errors.suburb),
+    message: z.string().trim().max(2000).optional().or(z.literal("")),
+  });
+
+  type FormValues = z.infer<typeof formSchema>;
 
   const {
     register,
@@ -66,6 +68,13 @@ export function QuoteSection() {
   const clientType = watch("clientType");
   const service = watch("service");
 
+  const clientTypeLabels: Record<(typeof clientTypeValues)[number], string> = {
+    Homeowner: t.quote.clientTypes.homeowner,
+    Developer: t.quote.clientTypes.developer,
+    Business: t.quote.clientTypes.business,
+    Contractor: t.quote.clientTypes.contractor,
+  };
+
   async function onSubmit(values: FormValues) {
     setSubmitting(true);
     try {
@@ -76,19 +85,19 @@ export function QuoteSection() {
       });
       const json = await res.json();
       if (!res.ok || !json.ok) {
-        throw new Error(json.error || "Could not send your request");
+        throw new Error(json.error || t.quote.toastErrorTitle);
       }
       setSuccess(true);
       reset();
       toast({
-        title: "Request sent successfully",
-        description: "Our team will call you back shortly.",
+        title: t.quote.toastSuccessTitle,
+        description: t.quote.toastSuccessDesc,
       });
     } catch (err) {
       toast({
-        title: "Could not send request",
+        title: t.quote.toastErrorTitle,
         description:
-          err instanceof Error ? err.message : "Please try again, or call us directly.",
+          err instanceof Error ? err.message : t.quote.toastErrorDesc,
         variant: "destructive",
       });
     } finally {
@@ -97,17 +106,16 @@ export function QuoteSection() {
   }
 
   return (
-    <section id="quote" className="scroll-mt-24 bg-charcoal py-20 text-white sm:py-24" aria-label="Request a quote">
+    <section id="quote" className="scroll-mt-24 bg-charcoal py-20 text-white sm:py-24" aria-label={t.a11y.quoteSection}>
       <div className="section-shell grid gap-12 lg:grid-cols-[0.9fr_1.1fr]">
         {/* Contact info column */}
         <Reveal>
-          <p className="kicker-on-dark">Request a quote</p>
+          <p className="kicker-on-dark">{t.quote.kicker}</p>
           <h2 className="mt-4 text-balance text-3xl font-bold tracking-tight sm:text-4xl">
-            Tell us what you need. We&rsquo;ll measure, quote, deliver.
+            {t.quote.title}
           </h2>
           <p className="mt-4 max-w-lg text-base leading-8 text-white/70">
-            Fill in the form and we&rsquo;ll come back to you — or reach us directly on the details below.
-            Quotes are free and come with no obligation.
+            {t.quote.subtitle}
           </p>
 
           <ul className="mt-9 space-y-5">
@@ -117,7 +125,7 @@ export function QuoteSection() {
                   <PhoneIcon className="h-5 w-5" />
                 </span>
                 <span>
-                  <span className="block text-xs font-semibold uppercase tracking-[0.2em] text-white/50">Call us</span>
+                  <span className="block text-xs font-semibold uppercase tracking-[0.2em] text-white/50">{t.quote.callUs}</span>
                   <span className="mt-0.5 block text-base font-semibold text-white transition group-hover:text-gold">
                     {company.phonePrimary} · {company.phoneSecondary}
                   </span>
@@ -137,9 +145,9 @@ export function QuoteSection() {
                   <WhatsAppIcon className="h-5 w-5" />
                 </span>
                 <span>
-                  <span className="block text-xs font-semibold uppercase tracking-[0.2em] text-white/50">WhatsApp</span>
+                  <span className="block text-xs font-semibold uppercase tracking-[0.2em] text-white/50">{t.quote.whatsapp}</span>
                   <span className="mt-0.5 block text-base font-semibold text-white transition group-hover:text-gold">
-                    Message us instantly
+                    {t.quote.whatsappCta}
                   </span>
                 </span>
               </a>
@@ -150,7 +158,7 @@ export function QuoteSection() {
                   <MailIcon className="h-5 w-5" />
                 </span>
                 <span>
-                  <span className="block text-xs font-semibold uppercase tracking-[0.2em] text-white/50">Email</span>
+                  <span className="block text-xs font-semibold uppercase tracking-[0.2em] text-white/50">{t.quote.email}</span>
                   <span className="mt-0.5 block text-base font-semibold text-white transition group-hover:text-gold">
                     {company.email}
                   </span>
@@ -162,7 +170,7 @@ export function QuoteSection() {
                 <PinIcon className="h-5 w-5" />
               </span>
               <span>
-                <span className="block text-xs font-semibold uppercase tracking-[0.2em] text-white/50">Find us</span>
+                <span className="block text-xs font-semibold uppercase tracking-[0.2em] text-white/50">{t.quote.findUs}</span>
                 <span className="mt-0.5 block max-w-xs text-sm leading-6 text-white/80">{company.address}</span>
               </span>
             </li>
@@ -171,8 +179,10 @@ export function QuoteSection() {
                 <ClockIcon className="h-5 w-5" />
               </span>
               <span>
-                <span className="block text-xs font-semibold uppercase tracking-[0.2em] text-white/50">Hours</span>
-                <span className="mt-0.5 block max-w-xs text-sm leading-6 text-white/80">{company.hours}</span>
+                <span className="block text-xs font-semibold uppercase tracking-[0.2em] text-white/50">{t.quote.hours}</span>
+                <span className="mt-0.5 block max-w-xs text-sm leading-6 text-white/80">
+                  {t.quote.hoursText}
+                </span>
               </span>
             </li>
           </ul>
@@ -186,79 +196,78 @@ export function QuoteSection() {
                 <span className="flex h-20 w-20 items-center justify-center rounded-full bg-gold/15 text-gold-deep">
                   <CheckCircleIcon className="h-10 w-10" />
                 </span>
-                <h3 className="mt-6 text-2xl font-bold">Request received!</h3>
+                <h3 className="mt-6 text-2xl font-bold">{t.quote.successTitle}</h3>
                 <p className="mt-3 max-w-sm text-sm leading-7 text-ink">
-                  Thank you — one of our team will call you back shortly to confirm details and arrange a
-                  site visit. Need us urgently?
+                  {t.quote.successBody}
                 </p>
                 <a
                   href={`tel:${company.phonePrimary.replace(/\s/g, "")}`}
                   className="mt-7 inline-flex h-12 items-center gap-2 rounded-full bg-charcoal px-7 text-sm font-semibold text-white transition hover:bg-gold hover:text-charcoal"
                 >
                   <PhoneIcon className="h-4 w-4" aria-hidden="true" />
-                  Call {company.phonePrimary}
+                  {t.faq.call} {company.phonePrimary}
                 </a>
                 <button
                   onClick={() => setSuccess(false)}
                   className="mt-5 text-sm font-semibold text-gold-deep underline-offset-4 hover:underline"
                 >
-                  Send another request
+                  {t.quote.sendAnother}
                 </button>
               </div>
             ) : (
               <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
-                <h3 className="text-xl font-bold">Request a tailored quote</h3>
+                <h3 className="text-xl font-bold">{t.quote.formTitle}</h3>
 
                 <div className="grid gap-5 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="q-name">Full name *</Label>
-                    <Input id="q-name" placeholder="e.g. Sipho Ndlovu" aria-invalid={!!errors.name} {...register("name")} />
+                    <Label htmlFor="q-name">{t.quote.fullName}</Label>
+                    <Input id="q-name" placeholder={t.quote.namePh} aria-invalid={!!errors.name} {...register("name")} />
                     {errors.name && <p className="text-xs font-medium text-red-600">{errors.name.message}</p>}
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="q-phone">Contact number *</Label>
-                    <Input id="q-phone" type="tel" placeholder="e.g. 083 710 3475" aria-invalid={!!errors.phone} {...register("phone")} />
+                    <Label htmlFor="q-phone">{t.quote.contactNumber}</Label>
+                    <Input id="q-phone" type="tel" placeholder={t.quote.phonePh} aria-invalid={!!errors.phone} {...register("phone")} />
                     {errors.phone && <p className="text-xs font-medium text-red-600">{errors.phone.message}</p>}
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="q-email">Email (optional)</Label>
-                  <Input id="q-email" type="email" placeholder="you@example.co.za" aria-invalid={!!errors.email} {...register("email")} />
+                  <Label htmlFor="q-email">{t.quote.emailOptional}</Label>
+                  <Input id="q-email" type="email" placeholder={t.quote.emailPh} aria-invalid={!!errors.email} {...register("email")} />
                   {errors.email && <p className="text-xs font-medium text-red-600">{errors.email.message}</p>}
                 </div>
 
                 <div className="grid gap-5 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="q-type">I am a… *</Label>
+                    <Label htmlFor="q-type">{t.quote.clientType}</Label>
                     <input type="hidden" {...register("clientType")} />
                     <Select value={clientType} onValueChange={(v) => setValue("clientType", v as FormValues["clientType"])}>
                       <SelectTrigger id="q-type" className="w-full">
-                        <SelectValue placeholder="Select client type" />
+                        <SelectValue placeholder={t.quote.clientTypePh} />
                       </SelectTrigger>
                       <SelectContent>
-                        {clientTypes.map((c) => (
+                        {clientTypeValues.map((c) => (
                           <SelectItem key={c} value={c}>
-                            {c}
+                            {clientTypeLabels[c]}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="q-service">Service needed *</Label>
+                    <Label htmlFor="q-service">{t.quote.service}</Label>
                     <input type="hidden" {...register("service")} />
                     <Select value={service} onValueChange={(v) => setValue("service", v)}>
                       <SelectTrigger id="q-service" className="w-full" aria-invalid={!!errors.service}>
-                        <SelectValue placeholder="Select a service" />
+                        <SelectValue placeholder={t.quote.servicePh} />
                       </SelectTrigger>
                       <SelectContent>
                         {services.map((s) => (
-                          <SelectItem key={s.id} value={s.title}>
-                            {s.title}
+                          <SelectItem key={s.id} value={s.apiTitle}>
+                            {t.services.items[s.id].title}
                           </SelectItem>
                         ))}
-                        <SelectItem value="Something else">Something else / not sure</SelectItem>
+                        <SelectItem value="Something else">{t.quote.serviceOther}</SelectItem>
                       </SelectContent>
                     </Select>
                     {errors.service && <p className="text-xs font-medium text-red-600">{errors.service.message}</p>}
@@ -266,17 +275,17 @@ export function QuoteSection() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="q-suburb">Site location / suburb *</Label>
-                  <Input id="q-suburb" placeholder="e.g. Roodepoort, Johannesburg" aria-invalid={!!errors.suburb} {...register("suburb")} />
+                  <Label htmlFor="q-suburb">{t.quote.suburb}</Label>
+                  <Input id="q-suburb" placeholder={t.quote.suburbPh} aria-invalid={!!errors.suburb} {...register("suburb")} />
                   {errors.suburb && <p className="text-xs font-medium text-red-600">{errors.suburb.message}</p>}
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="q-message">Project details (optional)</Label>
+                  <Label htmlFor="q-message">{t.quote.details}</Label>
                   <Textarea
                     id="q-message"
                     rows={4}
-                    placeholder="Tell us about the work, size, timing — anything that helps us quote accurately."
+                    placeholder={t.quote.detailsPh}
                     className="resize-none"
                     {...register("message")}
                   />
@@ -290,17 +299,17 @@ export function QuoteSection() {
                   {submitting ? (
                     <span className="flex items-center gap-2.5">
                       <span className="h-4 w-4 animate-spin rounded-full border-2 border-charcoal/30 border-t-charcoal" aria-hidden="true" />
-                      Sending…
+                      {t.quote.sending}
                     </span>
                   ) : (
                     <span className="flex items-center gap-2">
-                      Request My Free Quote
+                      {t.quote.submit}
                       <ArrowRightIcon className="h-4 w-4" aria-hidden="true" />
                     </span>
                   )}
                 </Button>
                 <p className="text-center text-xs leading-5 text-ink/70">
-                  We aim to respond the same working day. Your details are only used to prepare your quote.
+                  {t.quote.privacy}
                 </p>
               </form>
             )}
@@ -312,7 +321,7 @@ export function QuoteSection() {
       <div className="section-shell mt-16">
         <Reveal>
           <div className="rounded-2xl border border-white/10 bg-white/[0.05] p-6 sm:p-8">
-            <p className="text-xs font-bold uppercase tracking-[0.28em] text-gold">Areas we service</p>
+            <p className="text-xs font-bold uppercase tracking-[0.28em] text-gold">{t.quote.areasTitle}</p>
             <ul className="mt-4 flex flex-wrap gap-2.5">
               {serviceAreas.map((area) => (
                 <li
@@ -323,7 +332,7 @@ export function QuoteSection() {
                 </li>
               ))}
               <li className="rounded-full border border-gold/40 bg-gold/10 px-4 py-1.5 text-sm font-semibold text-gold">
-                + greater Gauteng
+                {t.quote.greaterGauteng}
               </li>
             </ul>
           </div>
