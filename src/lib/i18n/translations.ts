@@ -491,11 +491,11 @@ export const zu: Dict = {
     "credentials": {
       "cidb": {
         "title": "CIDB 6 graded",
-        "body": "Formally graded by the Construction Industry Development Board — capacity and compliance you inherit on your project, whether it's a home fence or a warehouse build."
+        "body": "Ngokushushu yehlukaniswe yi-Construction Industry Development Board — ukungabi nomsebenzi nokulingana okufanayo okuzoba kufonini lwakho, ngokuba yifence yasekhaya noma umsebenzi we-warehouse."
       },
       "owned": {
         "title": "100% black-owned",
-        "body": "A proudly South African, privately owned company founded in 2019 on integrity, excellence and the transfer of skills to the communities we work in."
+        "body": "Umsebenzi owaziwa ngokungcono njengomsebenzi waseNingizimu Afrika, owenqaba yedwa owasungulwa ngo-2019 ekungqubaveni, kubanzi kanye nokuguquka kwamafundo kwizindawo ezisebenza kuzo."
       },
       "welding": {
         "title": "In-house welding",
